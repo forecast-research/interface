@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>HIT Detail</title>
+        <link rel="stylesheet" type="text/css" href="../../assets/style.css">
+        <script src="../../assets/js/jquery-3.1.1.min.js"></script>
+    </head>
+
+    <body>
+
+        <h1><a href="../">↩ Go back</a></h1>
+        <h2>HIT Parameters</h2>
+
+        <ul>
+            <li><b>Internal name:</b> <span id="internalName">?</span></li>
+            <li><b>Launch date:</b> <span id="creationTime">?</span></li>
+            <li><b>HIT title:</b> <span id="title">?</span></li>
+            <li><b>HIT description:</b> <span id="description">?</span></li>
+            <li><b>Total HIT lifetime:</b> <span id="lifetime">?</span></li>
+            <li><b>Maximum duration for each assignment:</b> <span id="duration">?</span></li>
+            <li><b>Assignment count:</b> <span class="assignments">?</span></li>
+            <li><b><a href="./conditions.html">Condition codes</a>:</b> <span id="conditions">?</span></li>
+            <li><b>Base payment:</b> $<span id="basePayment">?</span></li>
+            <li><b>Targeted site:</b> <span id="sandbox">?</span></li>
+        </ul>
+
+        <h2>Known Assignments</h2>
+
+        <ul>
+            <li><b>Allocated assignments:</b> <span id="allocatedAssignments">?</span> / <span class="assignments">?</span></li>
+            <li><b>Completed assignments:</b> <span id="completedAssignments">?</span> / <span class="assignments">?</span></li>
+            <li><b>Pending assignments:</b> <span id="pendingAssignments">?</span> / <span class="assignments">?</span></li>
+        </ul>
+
+        <table id="assignmentlist">
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Assignment ID</td>
+                    <td>Worker ID</td>
+                    <td>IP Address</td>
+                    <td><a href="./conditions.html">Condition</a></td>
+                    <td>Start Time</td>
+                    <td>Completion Time</td>
+                    <td>Score</td>
+                    <td>Bonus</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <h2>Control</h2>
+
+        <input id="approve" type="button" value="Approve HIT">
+        <input id="download-overview" type="button" value="Download Overview CSV">
+        <input id="download-detail" type="button" value="Download Detail CSV">
+        <input id="download-bonus-csv" type="button" value="Bonus Payments CSV"><br>
+
+        <h2 style="color: red">Deletion</h2>
+        <input id="delete" type="button" value="Delete HIT">
+
+        <script>
+            var getQueryStringParam = function (name) {
+                var query = window.location.search.substring(1);
+                var vars = query.split('&');
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split('=', 2);
+                    if (decodeURIComponent(pair[0]) === name) {
+                        return decodeURIComponent(pair[1]);
+                    }
+                }
+                return null;
+            };
+            $(function () {
+                var hitId = getQueryStringParam('hit');
+                if (hitId == false) {
+                    window.alert('Query string parameter \'hit\' required');
+                    return;
+                }
+                $.ajax({
+                    url: '../../hits/' + hitId,
+                    type: 'GET',
+                    success: function (hit) {
+                        $('#internalName').text(hit.internalName);
+                        $('#creationTime').text(hit.creationTime);
+                        $('#title').text(hit.title);
+                        $('#description').text(hit.description);
+                        $('#lifetime').text((hit.lifetime / 3600) + ' hours');
+                        $('#duration').text((hit.duration / 3600) + ' hours');
+                        $('.assignments').text(hit.assignments);
+                        $('#basePayment').text(hit.basePayment.toFixed(2));
+                        $('#sandbox').text(hit.sandbox ? 'Sandbox' : 'Live');
+                        $('#conditions').text(hit.conditions.join(', '));
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        var body = $(document.body);
+                        body.append('<h2>Error</h2>');
+                        if (jqXHR.status === 502) {
+                            var messages = jqXHR.responseJSON.messages;
+                            var ul = $('<ul>').appendTo(body);
+                            for (var i = 0; i < messages.length; ++i) {
+                                ul.append($('<li>').text(messages[i]));
+                            }
+                        } else {
+                            var msg = textStatus;
+                            if (errorThrown) msg += ': ' + errorThrown;
+                            body.append($('<p>').text(msg));
+                        }
+                    }
+                });
+                $.ajax({
+                    url: '../../hits/' + hitId + '/assignments',
+                    type: 'GET',
+                    success: function (assignments) {
+                        var completedCount = 0;
+                        for (var i = 0; i < assignments.length; ++i) {
+                            var completed = assignments[i].completionTime && assignments[i].completionTime !== '';
+                            if (completed) ++completedCount;
+                        }
+                        var j = 0;
+                        for (var i = 0; i < assignments.length; ++i) {
+                            var completed = assignments[i].completionTime && assignments[i].completionTime !== '';
+                            var row = $('<tr>').appendTo('#assignmentlist tbody');
+                            row.append($('<td>').text(completed ? (completedCount - j) : ''));
+                            if (completed) ++j;
+                            row.append($('<td>').append($('<a>').attr('href',
+                                'show-assignment?hit=' + hitId + '&assignment=' +
+                                assignments[i]._id).text(assignments[i]._id)));
+                            row.append($('<td>').text(assignments[i].workerId));
+                            row.append($('<td>').text(assignments[i].ipAddress));
+                            row.append($('<td>').text(assignments[i].condition));
+                            row.append($('<td>').text(assignments[i].startTime));
+                            row.append($('<td>').text(assignments[i].completionTime));
+                            row.append($('<td>').text(window.priceHelpers.totalExperimentScore(assignments[i])));
+                                row.append($('<td>').text('$' + window.priceHelpers.totalEarnings(assignments[i]).toFixed(2)));
+                        }
+                        $('#allocatedAssignments').text(assignments.length);
+                        $('#completedAssignments').text(completedCount);
+                        $('#pendingAssignments').text(assignments.length - completedCount);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        var body = $(document.body);
+                        body.append('<h2>Error</h2>');
+                        if (jqXHR.status === 502) {
+                            var messages = jqXHR.responseJSON.messages;
+                            var ul = $('<ul>').appendTo(body);
+                            for (var i = 0; i < messages.length; ++i) {
+                                ul.append($('<li>').text(messages[i]));
+                            }
+                        } else {
+                            var msg = textStatus;
+                            if (errorThrown) msg += ': ' + errorThrown;
+                            body.append($('<p>').text(msg));
+                        }
+                    }
+                });
+                $('#approve').click(function () {
+                    window.location = 'approve-hit?hit=' + hitId;
+                });
+                $('#delete').click(function () {
+                    var confirm = window.confirm('THIS ACTION WILL PERMANENTLY ' +
+                        'DELETE THIS HIT AND ALL ASSOCIATED ASSIGNMENTS! It ' +
+                        'cannot be undone! Are you SURE? Click OK to DELETE THIS ' +
+                        'HIT, or click Cancel to cancel.');
+                    if (!confirm) return;
+                    $.ajax({
+                        url: '../../hits/' + hitId,
+                        type: 'DELETE',
+                        success: function () {
+                            window.location = './list-hits';
+                        },
+                        error: function () {
+                            window.alert('An error occurred; the HIT could not be deleted.');
+                        }
+                    });
+                });
+                $('#download-overview').click(function () {
+                    window.location = '../../hits/' + hitId + '/csv/overview';
+                });
+                $('#download-detail').click(function () {
+                    window.location = '../../hits/' + hitId + '/csv/detail';
+                });
+                $('#download-bonus-csv').click(function () {
+                    window.location = '../../hits/' + hitId + '/bonusPayments';
+                });
+            });
+        </script>
+
+    </body>
+
+</html>

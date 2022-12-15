@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+body {
+    color: #202020;
+    font: 9pt/15pt 'Montserrat', sans-serif;
+}
+
+body > div {
+    margin: 0 auto;
+}
+
+fieldset {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+table, th, td {
+    border: 1px solid #c0c0c0;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 4px;
+}
+
+thead td {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+h2.err {
+    color: red;
+    background-color: #ffe0e0;
+}
+
+.task-row-start td {
+    border-top: none;
+
+}
+
+.condition-row-start td {
+    border-bottom: none;
+}

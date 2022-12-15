@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Assignment Detail</title>
+        <link rel="stylesheet" type="text/css" href="../../assets/style.css">
+        <script src="../../assets/js/jquery-3.1.1.min.js"></script>
+    </head>
+
+    <body>
+
+        <h1><a href="../">↩ Go back</a></h1>
+        <h2>Assignment Parameters</h2>
+
+        <ul>
+            <li><b>HIT id:</b> <span id="hitId"></span></li>
+            <li><b>Worker ID:</b> <span id="workerId"></span></li>
+            <li><b>IP address:</b> <span id="ipAddress"></span></li>
+            <li><b>User agent:</b> <span id="userAgent"></span></li>
+            <li><b><a href="./conditions.html">Condition</a>:</b> <span id="condition"></span></li>
+            <li><b>Score:</b> <span id="score"></span></li>
+            <li><b>Base payment:</b> <span id="basePayment"></span></li>
+            <li><b>Bonus:</b> <span id="bonus"></span></li>
+        </ul>
+
+        <h2>Timing</h2>
+
+        <ul>
+            <li><b>Start time:</b> <span id="startTime"></span></li>
+            <li><b>Completion time:</b> <span id="completionTime"></span></li>
+            <li><b>Time spent on consent form:</b> <span id="consentTime"></span></li>
+            <li><b>Time spent on instruction page:</b> <span id="instructionTime"></span></li>
+            <li><b>Time spent in experiment phase:</b> <span id="experimentTime"></span></li>
+            <li><b>Time spent on survey:</b> <span id="surveyTime"></span></li>
+        </ul>
+
+        <h2>Survey Data</h2>
+
+        <ul id="survey">
+        </ul>
+
+        <h2>Seed Values</h2>
+
+        <p><span id="seedValues"></span></p>
+
+        <h2>Prediction Rounds</h2>
+
+        <p><b>Note:</b> The "actual next value" column is the model realization
+        generated after the user entered these predictions. The value corresponds
+        to the "Prediction 1" column of <i>this</i> row and to the "Prediction 2"
+        column of the <i>previous</i> row.</p>
+
+        <div id="roundtables">
+
+        </div>
+
+        <script>
+            function createTaskTable (task, a, n) {
+                var table = $(document.createElement('div'));
+                table.append(`
+                    <h4>Task ${n + 1}</h4>
+                    <table>
+                    <thead>
+                        <tr>
+                            <td>Phase</td>
+                            <td>Round #</td>
+                            <td>Prediction 1</td>
+                            <td>Prediction 2</td>
+                            <td>Prediction Long</td>
+                            <td>Prediction 1 score</td>
+                            <td>Prediction 2 score</td>
+                            <td>Prediction Long score</td>
+                            <td>Prediction 1 Time</td>
+                            <td>Prediction 2 Time</td>
+                            <td>Prediction Long Time</td>
+                            <td>Prediction Submit Time</td>
+                            <td>Actual next value*</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    </table>
+                `);
+
+
+                for (var j = 0; j < a.values[n].length; ++j) {
+                    const currentRound = j - 40 + (j - 40 >= 0 ? 1 : 0);
+                    let phase = "";
+                    if (currentRound < 0) {
+                        phase = "Pre-task";
+                    } else if (currentRound <= task.trainingRounds) {
+                        phase = "Training";
+                    } else if (
+                        currentRound <=
+                        task.trainingRounds + task.testingRounds
+                    ) {
+                        phase = "Testing";
+                    } else {
+                        phase = "Post-task";
+                    }
+
+                    
+
+                    table.find('tbody').append(
+                        $('<tr>')
+                            // Phase
+                            .append($('<td>').text(phase))
+                            // Round
+                            .append($('<td>').text(currentRound))
+                            // Prediction A value
+                            .append($('<td>').text(a.predictions[n][2 * (j - 40) + 0]?.toFixed(2) ?? ''))
+                            // Prediction B value
+                            .append($('<td>').text(a.predictions[n][2 * (j - 40) + 1]?.toFixed(2) ?? ''))
+                            // Long run average value
+                            .append($('<td>').text((phase === "Training" || phase === "Testing") &&
+                                a.tasks[n].predictLongRunning
+                                ? a.longRunningAveragePredHist?.[n]?.[j - 40]?.toFixed(2) ||
+                                ""
+                                : ""))
+                            // Prediction A score
+                            .append($('<td>').text(
+                                phase === 'Training' || phase === 'Testing'
+                                    ? window.priceHelpers.getScore(j - 40, a.predictions[n], a.values[n], task)[0] || 0
+                                    : ''
+                            ))
+                            // Prediction B score
+                            .append($('<td>').text(
+                                phase === 'Training' || phase === 'Testing'
+                                    ? window.priceHelpers.getScore((j - 40), a.predictions[n], a.values[n], task)[1] || 0
+                                    : ''
+                            ))
+                            // Long run average score
+                            .append($('<td>').text((phase === "Training" || phase === "Testing") &&
+                                a.tasks[n].predictLongRunning
+                                ? window.priceHelpers.scoreForPrediction(
+                                    a.tasks[n],
+                                    a.longRunningAveragePredHist?.[n]?.[j - 40] || 0,
+                                    0
+                                )
+                                : ""))
+                            // Prediction A time
+                            .append($('<td>').text(a.predictionTimes[n][3 * (j - 40) + 0]?.toFixed(2) ?? ''))
+                            // Prediction B time
+                            .append($('<td>').text(a.predictionTimes[n][3 * (j - 40) + 1]?.toFixed(2) ?? ''))
+                            // Long run average time
+                            .append($('<td>').text((phase === "Training" || phase === "Testing") &&
+                                a.tasks[n].predictLongRunning
+                                ? a.longRunningAveragePredTimingHist?.[n]?.[
+                                    j - 40
+                                ]?.toFixed(2) || ""
+                                : ""))
+                            // Prediction Submit Time
+                            .append($('<td>').text(a.predictionTimes[n][3 * (j - 40) + 2]?.toFixed(2) ?? ''))
+                            // Realization value (t + 1)
+                            .append($('<td>').text(a.values[n][j].toFixed(2)))
+                    )
+                }
+
+                return table;
+
+            }
+
+            var getQueryStringParam = function (name) {
+                var query = window.location.search.substring(1);
+                var vars = query.split('&');
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split('=', 2);
+                    if (decodeURIComponent(pair[0]) === name) {
+                        return decodeURIComponent(pair[1]);
+                    }
+                }
+                return null;
+            };
+            $(function () {
+                var hitId = getQueryStringParam('hit');
+                var assignmentId = getQueryStringParam('assignment');
+                if (hitId == false) {
+                    window.alert('Query string parameters \'hit\' and \'assignment\' required');
+                    return;
+                }
+
+                $.ajax({
+                    url: '../../hits/' + hitId,
+                    type: 'GET',
+                    success: function (hit) {
+                        $.ajax({
+                            url: '../../hits/' + hitId + '/assignments/' + assignmentId,
+                            type: 'GET',
+                            success: function (assignment) {
+                                $.ajax({
+                                    url: '../../conditions/' + assignment.condition,
+                                    type: 'GET',
+                                    success: function (condition) {
+                                        $('#hitId').empty().append($('<a>').attr('href', 'show-hit?hit=' + hitId).text(hitId));
+                                        $('#workerId').text(assignment.workerId);
+                                        $('#ipAddress').text(assignment.ipAddress);
+                                        $('#userAgent').text(assignment.userAgent);
+                                        $('#condition').text(assignment.condition);
+                                        $('#score').text(window.priceHelpers.totalExperimentScore(assignment));
+                                        $('#basePayment').text(assignment.completionTime ? ('$' + hit.basePayment.toFixed(2)) : '');
+                                        $('#bonus').text(assignment.completionTime ? ('$' + window.priceHelpers.totalEarnings(assignment).toFixed(2)) : '');
+                                        $('#startTime').text(assignment.startTime);
+                                        $('#completionTime').text(assignment.completionTime);
+                                        $('#consentTime').text(assignment.consentTime ? (assignment.consentTime + ' seconds') : 'N/A');
+                                        $('#instructionTime').text(assignment.instructionTime ? (assignment.instructionTime + ' seconds') : 'N/A');
+                                        $('#experimentTime').text(assignment.experimentTime ? (assignment.experimentTime + ' seconds') : 'N/A');
+                                        $('#surveyTime').text(assignment.surveyTime ? (assignment.surveyTime + ' seconds') : 'N/A');
+                                        for (var i = 0; i < assignment.tasks.length; i += 1) {
+                                            var $seedDiv = $('<div></div>');
+                                            $('#seedValues').append($seedDiv);
+                                            $seedDiv.text(assignment.values[i] ? (assignment.values[i].slice(0, 40).map(function (x) { return x.toFixed(2); }).join(', ')) : 'N/A');
+                                            $seedDiv.prepend($('<h4></h4>').text('Task ' + (i + 1)));
+                                            
+                                            if (assignment.predictions) {
+                                                $('#roundtables').append(createTaskTable(assignment.tasks[i], assignment, i));
+                                            }
+                                        }
+                                        if (assignment.surveyData) {
+                                            for (var i = 0; i < assignment.surveyData.length; ++i) {
+                                                var data = assignment.surveyData[i];
+                                                var tokens = data.split('=', 2);
+                                                var item = $('<li>');
+                                                item.append($('<span class="surveykey">').text(tokens[0]));
+                                                item.append(' = ');
+                                                item.append($('<span class="surveyvalue">').text(tokens[1]));
+                                                $('#survey').append(item);
+                                            }
+                                        }
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        var body = $(document.body);
+                                        body.append('<h2>Error</h2>');
+                                        if (jqXHR.status === 502) {
+                                            var messages = jqXHR.responseJSON.messages;
+                                            var ul = $('<ul>').appendTo(body);
+                                            for (var i = 0; i < messages.length; ++i) {
+                                                ul.append($('<li>').text(messages[i]));
+                                            }
+                                        } else {
+                                            var msg = textStatus;
+                                            if (errorThrown) msg += ': ' + errorThrown;
+                                            body.append($('<p>').text(msg));
+                                        }
+                                    },
+                                });
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                var body = $(document.body);
+                                body.append('<h2>Error</h2>');
+                                if (jqXHR.status === 502) {
+                                    var messages = jqXHR.responseJSON.messages;
+                                    var ul = $('<ul>').appendTo(body);
+                                    for (var i = 0; i < messages.length; ++i) {
+                                        ul.append($('<li>').text(messages[i]));
+                                    }
+                                } else {
+                                    var msg = textStatus;
+                                    if (errorThrown) msg += ': ' + errorThrown;
+                                    body.append($('<p>').text(msg));
+                                }
+                            },
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        var body = $(document.body);
+                        body.append('<h2>Error</h2>');
+                        if (jqXHR.status === 502) {
+                            var messages = jqXHR.responseJSON.messages;
+                            var ul = $('<ul>').appendTo(body);
+                            for (var i = 0; i < messages.length; ++i) {
+                                ul.append($('<li>').text(messages[i]));
+                            }
+                        } else {
+                            var msg = textStatus;
+                            if (errorThrown) msg += ': ' + errorThrown;
+                            body.append($('<p>').text(msg));
+                        }
+                    }
+                });
+            });
+        </script>
+
+    </body>
+
+</html>

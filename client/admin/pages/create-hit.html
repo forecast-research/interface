@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Create New HIT</title>
+        <link rel="stylesheet" type="text/css" href="../../assets/style.css">
+        <script src="../../assets/js/jquery-3.1.1.min.js"></script>
+    </head>
+
+    <body>
+
+        <h1><a href="../">↩ Go back</a></h1>
+        <h2>Create New HIT</h2>
+        <form>
+            <fieldset>
+                <legend>Parameters</legend>
+                <div>
+                    <label for="title">HIT title (visible to workers):</label>
+                    <input id="title" name="title" type="text" size="50" value="Experiment on Statistical Predictions" placeholder="Title" required autofocus>
+                </div>
+                <div>
+                    <label for="description">HIT description (visible to workers):</label>
+                    <input id="description" name="description" type="text" size="50" value="Participate in an experiment on statistical predictions" placeholder="Description" required autofocus>
+                </div>
+                <div>
+                    <label for="internalName">Internal name:</label>
+                    <input id="internalName" name="internalName" type="text" size="50" value="" required autofocus>
+                </div>
+                <div>
+                    <label for="lifetime">Total HIT lifetime (hours):</label>
+                    <input id="lifetime" name="lifetime" type="number" value="24" placeholder="Lifetime" required autofocus>
+                </div>
+                <div>
+                    <label for="duration">Maximum duration for each assignment (hours):</label>
+                    <input id="duration" name="duration" type="number" value="1" placeholder="Duration" required autofocus>
+                </div>
+                <div>
+                    <label for="assignments"><b>Total</b> number of participants (participants will be assigned one of the conditions below):</label>
+                    <input id="assignments" name="assignments" type="number" placeholder="Count" required autofocus>
+                </div>
+                <div>
+                    <label for="base-payment">Base payment ($):</label>
+                    <input id="base-payment" name="base-payment" type="number" placeholder="Dollar amount" required>
+                </div>
+                <div>
+                    <label for="conditions">Condition codes (comma separated, e.g. "C11, C12, M1"):</label>
+                    <input id="conditions" name="conditions" type="text" placeholder="Condition code list" required>
+                </div>
+                <div>
+                    <label for="target-site">Targeted site:</label>
+                    <select id="target-site" name="target-site">
+                        <option value="sandbox">Sandbox</option>
+                        <option value="live">Live</option>
+                    </select>
+                </div>
+            </fieldset>
+            <fieldset id="buttons">
+                <input id="create-button" type="button" value="Create">
+            </fieldset>
+        </form>
+
+        <script>
+            $(function () {
+
+                var submitted = false;
+
+                var getInputNumber = function (q) {
+                    var str = $(q).val();
+                    if (str === '' || isNaN(str)) return NaN;
+                    return Number(str);
+                };
+
+                $('#create-button').click(function () {
+
+                    if (submitted) return;
+                    submitted = true;
+
+                    try {
+
+                        var title = $('#title').val();
+                        if (!title || title.length === 0) throw 'HIT title is required';
+
+                        var basePayment = getInputNumber('#base-payment');
+                        if (isNaN(basePayment) || basePayment <= 0)
+                            throw 'Base payment must be a positive number';
+
+                        var description = $('#description').val();
+                        if (!description || description.length === 0)
+                            throw 'HIT description is required';
+
+                        var internalName = $('#internalName').val();
+                        if (!internalName || internalName.length === 0)
+                            throw 'Internal name is required';
+
+                        var lifetime = getInputNumber('#lifetime');
+                        if (isNaN(lifetime) || lifetime <= 0)
+                            throw 'Lifetime must be a positive number';
+
+                        var duration = getInputNumber('#duration');
+                        if (isNaN(duration) || duration <= 0)
+                            throw 'Duration must be a positive number';
+
+                        var assignments = getInputNumber('#assignments');
+                        if (assignments !== parseInt(assignments, 10) || assignments < 1)
+                            throw 'Assignment count must be a positive integer';
+
+                        var conditionsText = $('#conditions').val();
+                        var conditionsTokens = conditionsText.split(',');
+                        var conditions = [];
+                        for (var x = 0; x < conditionsTokens.length; ++x) {
+                            var condition = conditionsTokens[x].trim();
+                            conditions.push(condition);
+                        }
+                        if (conditions.length === 0)
+                            throw 'Condition list must be a comma-separated ' +
+                                'list of condition codes (names)';
+
+                        var targetSite = $('#target-site').val();
+                        if (targetSite !== 'sandbox' && targetSite !== 'live')
+                            throw 'Targeted site is not a valid choice';
+
+                        $('form input').prop('disabled', true);
+                        $('form select').prop('disabled', true);
+
+                        $.ajax({
+                            url: '../../hits',
+                            type: 'PUT',
+                            data: {
+                                title:          title,
+                                description:    description,
+                                internalName:   internalName,
+                                lifetime:       lifetime * 3600,
+                                duration:       duration * 3600,
+                                assignments:    assignments,
+                                conditions:     conditions,
+                                basePayment:    basePayment,
+                                sandbox:        targetSite === 'sandbox' ? 1 : 0,
+                            },
+                            success: function (data) {
+                                submitted = false;
+                                $('form input').prop('disabled', false);
+                                $('form select').prop('disabled', false);
+                                window.location = 'show-hit?hit=' + data.hitId;
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                var msg;
+                                var sc = jqXHR.statusCode();
+                                if (jqXHR.status === 502) {
+                                    msg = 'Creation command failed:';
+                                    var messages = jqXHR.responseJSON.messages;
+                                    for (var i = 0; i < messages.length; ++i) {
+                                        msg += '\n' + messages[i];
+                                    }
+                                } else {
+                                    msg = 'Creation command failed:\n' + textStatus;
+                                    if (errorThrown) msg += ': ' + errorThrown;
+                                }
+                                window.alert(msg);
+                                submitted = false;
+                                $('form input').prop('disabled', false);
+                                $('form select').prop('disabled', false);
+                            }
+                        });
+
+                    } catch (ex) {
+                        window.alert(ex);
+                        submitted = false;
+                    }
+
+                });
+
+            });
+        </script>
+
+    </body>
+
+</html>

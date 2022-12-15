@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Local Experiment</title>
+        <link rel="stylesheet" type="text/css" href="../../assets/style.css">
+        <script src="../../assets/js/jquery-3.1.1.min.js"></script>
+        <style type="text/css">
+            body { padding-left: 10px; padding-right: 10px; }
+            input { margin: 1px; margin-left: 5px; }
+            input[type='checkbox'] { vertical-align: middle; }
+            select { margin: 2px; }
+        </style>
+    </head>
+
+    <body>
+
+        <h1>Local Experiment App</h1>
+        <div class="params-container">
+            <div class="params-fieldset">
+                <fieldset class="fieldsets">
+                    <table>
+                        <legend>Statistical Model Parameters</legend>
+                        <tr>
+                            <td><label>Condition :</label></td>
+                            <td><input type="text" id="condition" name="condition" placeholder="Condition"></td>
+                        </tr>
+                        <tr>
+                            <td><label>Inertia (&rho;):</label></td>
+                            <td><input type="number" id="rho" name="rho" placeholder="Rho value" step="0.2" min="0"></td>
+                        </tr>
+                        <tr>
+                            <td><label>Constant (&mu;):</label></td>
+                            <td><input type="number" id="mu" name="mu" placeholder="Mu value"></td>
+                        </tr>
+                        <tr>
+                            <td><label>Standard deviation (&sigma;):</label></td>
+                            <td><input type="number" id="sigma" name="sigma" placeholder="Sigma value"></td>
+                        </tr>
+                        <tr>
+                            <td><label>RNG seed (blank for random):</label></td>
+                            <td><input type="text" id="seed" name="seed" placeholder="Seed value"></td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+            <div class="params-fieldset">
+                <fieldset class="fieldsets">
+                    <legend>User Interface Settings</legend>
+                    <table>
+                        <tr>
+                            <td><label>Entry mode:</label></td>
+                            <td>
+                                <select name="entryMode" id="entryMode" style="width: 144px;">
+                                    <option value="graphical">Graphical</option>
+                                    <option value="numeric">Numeric</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Training rounds:</label></td>
+                            <td><input type="number" id="trainingRounds" name="trainingRounds" value="0" placeholder="Training rounds"></td>
+                        </tr>
+                        <tr>
+                            <td><label>Testing rounds:</label></td>
+                            <td><input type="number" id="testingRounds" name="testingRounds" value="40" placeholder="Testing rounds"></td>
+                        </tr>
+                        <tr>
+                            <td><label>Forecast mode:</label></td>
+                            <td>
+                                <select id="forecastMode" value="forecastMode" style="width: 144px;">
+                                    <option value="1+2">F1 + F2</option>
+                                    <option value="1">F1 only</option>
+                                    <option value="2">F2 only</option>
+                                    <option value="1+5">F1 + F5</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>Show gray dots:</label>
+                            </td>
+                            <td>
+                                <input type="checkbox" id="showGrayDots" name="showGrayDots" value="1" checked style="margin-right: 10px;">
+                                <label>Skip intro:</label>
+                                <input type="checkbox" id="skipIntro" name="skipIntro" value="1">
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+            <div class="params-fieldset">
+                <fieldset class="fieldsets">
+                    <legend>Instructions and Payment</legend>
+                    <table>
+                        <tr>
+                            <td><label>Base payment ($):</label></td>
+                            <td><input type="number" id="basePayment" name="basePayment" value="1.80" placeholder="Base payment"></td>
+                        </tr>
+                        <tr>
+                            <td><label>Bonus divisor (points/$):</label></td>
+                            <td><input type="number" id="bonusDivisor" value="600" placeholder="Bonus divisor"></td>
+                        </tr>
+                        <tr>
+                            <td><label>Context description (inserted into instructions):</label></td>
+                            <td><input type="text" id="context" name="context" value="quarterly US real GDP growth"></td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+
+        <!--<table style="width: 100%;">
+            <tr>
+                <td>
+                    <fieldset>
+                        <table>
+                            <legend>Statistical Model Parameters</legend>
+                            <tr>
+                                <td><label>Condition :</label></td>
+                                <td><input type="text" id="condition" name="condition" placeholder="Condition"></td>
+                            </tr>
+                            <tr>
+                                <td><label>Inertia (&rho;):</label></td>
+                                <td><input type="number" id="rho" name="rho" placeholder="Rho value" step="0.2" min="0"></td>
+                            </tr>
+                            <tr>
+                                <td><label>Constant (&mu;):</label></td>
+                                <td><input type="number" id="mu" name="mu" placeholder="Mu value"></td>
+                            </tr>
+                            <tr>
+                                <td><label>Standard deviation (&sigma;):</label></td>
+                                <td><input type="number" id="sigma" name="sigma" placeholder="Sigma value"></td>
+                            </tr>
+                            <tr>
+                                <td><label>RNG seed (blank for random):</label></td>
+                                <td><input type="text" id="seed" name="seed" placeholder="Seed value"></td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </td>
+                <td>
+                    <fieldset>
+                        <legend>User Interface Settings</legend>
+                        <table>
+                            <tr>
+                                <td><label>Entry mode:</label></td>
+                                <td>
+                                    <select name="entryMode" id="entryMode" style="width: 144px;">
+                                        <option value="graphical">Graphical</option>
+                                        <option value="numeric">Numeric</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Training rounds:</label></td>
+                                <td><input type="number" id="trainingRounds" name="trainingRounds" value="0" placeholder="Training rounds"></td>
+                            </tr>
+                            <tr>
+                                <td><label>Testing rounds:</label></td>
+                                <td><input type="number" id="testingRounds" name="testingRounds" value="40" placeholder="Testing rounds"></td>
+                            </tr>
+                            <tr>
+                                <td><label>Forecast mode:</label></td>
+                                <td>
+                                    <select id="forecastMode" value="forecastMode" style="width: 144px;">
+                                        <option value="1+2">F1 + F2</option>
+                                        <option value="1">F1 only</option>
+                                        <option value="2">F2 only</option>
+                                        <option value="1+5">F1 + F5</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Show gray dots:</label></td>
+                                <td><input type="checkbox" id="showGrayDots" name="showGrayDots" value="1" checked></td>
+                            </tr>
+                            <tr>
+                                <td><label>Skip intro:</label></td>
+                                <td><input type="checkbox" id="skipIntro" name="skipIntro" value="1"></td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </td>
+                <td>
+                    <fieldset>
+                        <legend>Instructions and Payment</legend>
+                        <table>
+                            <tr>
+                                <td><label>Base payment ($):</label></td>
+                                <td><input type="number" id="basePayment" name="basePayment" value="1.80" placeholder="Base payment"></td>
+                            </tr>
+                            <tr>
+                                <td><label>Bonus divisor (points/$):</label></td>
+                                <td><input type="number" id="bonusDivisor" value="600" placeholder="Bonus divisor"></td>
+                            </tr>
+                            <tr>
+                                <td><label>Context description (inserted into instructions):</label></td>
+                                <td><input type="text" id="context" name="context" value="quarterly US real GDP growth"></td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>-->
+
+        <div class="center-button">
+            <input id="launch" type="button" value="START">
+        </div>
+        <br>
+        <div>
+            <iframe id="frame" height="400" style="border: 1px solid black; width: 100%"></iframe>
+        </div>
+
+        <div class="back-link">
+            <a href="../index.html" id="home-link">Return to home</a>
+        </div>
+
+        <script>
+            $(function () {
+                $('#launch').click(function () {
+                    $('#frame')[0].src = '../../experiment.html?local=1' +
+                        '&condition=' + $('#condition').val() + 
+                        '&rho=' + $('#rho').val() +
+                        '&mu=' + $('#mu').val() +
+                        '&sigma=' + $('#sigma').val() +
+                        '&seed=' + $('#seed').val().trim() +
+                        '&entryMode=' + $('#entryMode').val() +
+                        '&basePayment=' + $('#basePayment').val() +
+                        '&bonusDivisor=' + $('#bonusDivisor').val() +
+                        '&trainingRounds=' + $('#trainingRounds').val() +
+                        '&testingRounds=' + $('#testingRounds').val() +
+                        '&showGrayDots=' + ($('#showGrayDots')[0].checked ? '1' : '0') +
+                        '&skipIntro=' + ($('#skipIntro')[0].checked ? '1' : '0') +
+                        '&forecastMode=' + $('#forecastMode').val() +
+                        '&context=' + encodeURIComponent($('#context').val());
+                });
+            });
+        </script>
+
+
+
+    </body>
+</html>

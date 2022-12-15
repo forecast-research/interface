@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Experiment on Statistical Expectations</title>
+    <link rel="stylesheet" type="text/css" href="./assets/experiment.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="./assets/js/jquery-3.1.1.min.js"></script>
+    <script src="./assets/js/seedrandom.min.js"></script>
+</head>
+
+<body>
+    <div>
+
+        <div class="page" id="javascript-page">
+            <noscript>
+                <p>JavaScript is required to participate in this HIT. Please
+                    use a web browser that supports and has enabled JavaScript.</p>
+            </noscript>
+        </div>
+
+        <div class="page" id="error-page" style="display: none">
+            <h1>Error</h1>
+            <p><span id="error-message"></span></p>
+        </div>
+
+        <div class="page" id="consent-page" style="display: none">
+
+            <div class="buttons">
+                <input class="btn btn-primary" type="button" id="consent-button" value="I Give My Consent">
+            </div>
+
+        </div>
+
+        <div class="page" id="instruction-page" style="display: none">
+            <div class="buttons">
+                <input class="btn btn-primary" type="button" id="start-button" value="Start Experiment">
+            </div>
+
+        </div>
+
+        <div class="page" id="experiment-page" style="display: none">
+            <div class="status-text" id="score-text">Score: <b><span id="score-value">0</span></b></div>
+            <div class="status-text" id="round-text">Round: <b><span id="round-number">1</span></b> of
+                <b><span class="insert-total-rounds"></b>
+            </div>
+            <div class="status-text" id="mode-text">Training Phase</div>
+            <div class="status-text" id="process-info"></div>
+            <div id="canvas-scroller">
+                <canvas width="400" height="350"></canvas>
+            </div>
+            <div id="long-running-task-prediction">
+                <p>What do you think is the long-run average of the process?</p>
+                <input type="number" step="0.01" placeholder="Enter a number" class="form-control-sm form-control" />
+            </div>
+
+            <div id="submission-bar">
+                <div id="prediction-boxes">
+                    <span id="numeric-entry">
+                    </span>
+                    <input type="button" class="btn btn-primary btn-sm" id="prediction-button" value="Make Prediction">
+                </div>
+            </div>
+
+            <div id="score-outer-bar">
+                <div id="score-bar">
+                    <span id="score-history"></span> | <b>Latest scores</b>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="page" id="survey-after-instructions" style="display: none">
+        </div>
+
+        <div class="page" id="survey-before-task" style="display: none">
+        </div>
+
+
+        <div class="hide page" id="between-task-page">
+            <div>
+                <div id="content">
+                    <div></div>
+                    <button class="btn btn-primary btn-small">Continue</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="waiting-page" style="display: none">
+
+            <h1>Experiment Submitted.</h1>
+
+            <p>Please hold on. The next section will begin in <span class="waiting-timer"></span></p>
+
+        </div>
+
+        <!-- Questions of listening materials -->
+
+        <div class="page" id="listening-questions-page" style="display: none">
+
+            <h1>Listening material questions</h1>
+
+            <p>The prediction section is now over. We would now like to ask a few
+                questions about listning materials you have listenned to during this expirements.</p>
+
+            <h2>1. Who is the person who is called the "Father of the Pacific Railway,"
+                who proposed to the Senate that they give him a strip of land from Lake Michigan
+                to the Pacific coast, on which he will build a railroad?</h2>
+            <select class="listening-questions-data" name="question1">
+                <option value="xxx">Please select an answer</option>
+                <option value="hartwell">Hartwell Carver</option>
+                <option value="asa">Asa Whitney</option>
+                <option value="robert">Robert Mills</option>
+                <option value="john">John Plumbe</option>
+            </select>
+
+            <h2>2. What happened to the proposal?</h2>
+            <select class="listening-questions-data" name="question2">
+                <option value="xxx">Please select an answer</option>
+                <option value="accepted">A. It was accepted with wide support.</option>
+                <option value="passed">B. It passed only after the United States' victory over Mexico, which led to the
+                    transfer of California.</option>
+                <option value="failed">C. It failed after a Senator, who claimed that the proposal concentrated too much
+                    power and wealth into the hands of one person, objected to the proposal.</option>
+                <option value="never">D. It never received the support of any states.</option>
+            </select>
+
+            <h3>Submit Results</h3>
+            <p>Click the button below to validate and submit your experiment data. This
+                button will submit your HIT for approval and return you to Mechanical Turk.</p>
+            <input type="button" id="submit-answers" value="Submit Answers">
+
+        </div>
+
+        <!-- End question part -->
+
+        <div class="page" id="survey-page" style="display: none">
+
+            <h3 class="mt-3">Background Information</h3>
+
+            <p>The prediction section is now over. We would now like to ask a few
+                questions about yourself to help us in our research.</p>
+
+            <style>
+                ol > li.ar1 {
+                    display: none;
+                }
+
+                .condition-group-C ol > li.ar1 {
+                    display: list-item;
+                }
+
+                ol {
+                    padding: 0;
+                    margin: 0;
+                    margin-left: 15px;
+                }
+            </style>
+
+            <ol>
+                
+                <li>
+                    <h2 class="mt-3">What is your gender?</h2>
+                    <select class="form-control survey-data" name="gender">
+                        <option value="xxx">Please specify</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </li>
+                </li>
+                <li>
+                    <h2 class="mt-3">What is your age?</h2>
+                    <input type="number" name="age" class="form-control survey-data" placeholder="Age in years">
+
+                <li>
+                    <h2 class="mt-3">What is the highest level of educational degree that you hold?</h2>
+                    <select class="form-control survey-data" name="degree">
+                        <option value="xxx">Please specify</option>
+                        <option value="graduate">Graduate (Masters, Ph.D., Post-doctoral)</option>
+                        <option value="college">College</option>
+                        <option value="highschool">High school</option>
+                        <option value="less">Below high school</option>
+                        <option value="other">Other</option>
+                    </select>
+                </li>
+
+                <li>
+                    <h2 class="mt-3">Have you taken statistics classes?</h2>
+                    <select class="form-control survey-data" name="statsClasses">
+                        <option value="xxx">Please specify</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </li>
+
+                <li class="ar1">
+                    <h2 class="mt-3">Are you familiar with AR(1) processes from your study or work?</h2>
+                    <select class="form-control survey-data" name="familiarWithAR1">
+                        <option value="xxx">Please specify</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+
+
+                    <div class="mt-3 small ar1-extra">
+                        Consider an AR(1) process , where  is an i.i.d. random variable with mean zero and variance 1. The current realization  is 1. Please fill in the following (please enter numbers, not fractions):
+                        <div class="d-flex mt-3 flex-column">
+                            <label class="d-flex flex-row"><span>Expected value of <?xml version="1.0" encoding="UTF-8" standalone="no" ?><svg xmlns="http://www.w3.org/2000/svg" width="32.232px" height="11.768px" viewBox="0 -442 1780.9 650" xmlns:xlink="http://www.w3.org/1999/xlink" style=""><defs><path id="MJX-16-TEX-I-78" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path><path id="MJX-16-TEX-I-74" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path><path id="MJX-16-TEX-N-2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path><path id="MJX-16-TEX-N-31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><use xlink:href="#MJX-16-TEX-I-78"></use></g><g data-mml-node="TeXAtom" transform="translate(572, -150) scale(0.707)"><g data-mml-node="mi"><use xlink:href="#MJX-16-TEX-I-74"></use></g><g data-mml-node="mo" transform="translate(361, 0)"><use xlink:href="#MJX-16-TEX-N-2B"></use></g><g data-mml-node="mn" transform="translate(1139, 0)"><use xlink:href="#MJX-16-TEX-N-31"></use></g></g></g></g></g></svg>:</span> <input class="form-control survey-data form-control-sm ml-1" style="flex-basis: auto; width: auto;" name="AR1Quiz1" type="number"></label>
+                            <label class="d-flex flex-row"><span>Expected value of <?xml version="1.0" encoding="UTF-8" standalone="no" ?><svg xmlns="http://www.w3.org/2000/svg" width="32.232px" height="11.768px" viewBox="0 -442 1780.9 650" xmlns:xlink="http://www.w3.org/1999/xlink" style=""><defs><path id="MJX-17-TEX-I-78" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path><path id="MJX-17-TEX-I-74" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path><path id="MJX-17-TEX-N-2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path><path id="MJX-17-TEX-N-32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><use xlink:href="#MJX-17-TEX-I-78"></use></g><g data-mml-node="TeXAtom" transform="translate(572, -150) scale(0.707)"><g data-mml-node="mi"><use xlink:href="#MJX-17-TEX-I-74"></use></g><g data-mml-node="mo" transform="translate(361, 0)"><use xlink:href="#MJX-17-TEX-N-2B"></use></g><g data-mml-node="mn" transform="translate(1139, 0)"><use xlink:href="#MJX-17-TEX-N-32"></use></g></g></g></g></g></svg>:</span> <input class="form-control survey-data form-control-sm ml-1" name="AR1Quiz2" style="flex-basis: auto; width: auto;" type="number"></label>
+                            <label class="d-flex flex-row"><span>Conditional variance of <?xml version="1.0" encoding="UTF-8" standalone="no" ?><svg xmlns="http://www.w3.org/2000/svg" width="32.232px" height="11.768px" viewBox="0 -442 1780.9 650" xmlns:xlink="http://www.w3.org/1999/xlink" style=""><defs><path id="MJX-16-TEX-I-78" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path><path id="MJX-16-TEX-I-74" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path><path id="MJX-16-TEX-N-2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path><path id="MJX-16-TEX-N-31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><use xlink:href="#MJX-16-TEX-I-78"></use></g><g data-mml-node="TeXAtom" transform="translate(572, -150) scale(0.707)"><g data-mml-node="mi"><use xlink:href="#MJX-16-TEX-I-74"></use></g><g data-mml-node="mo" transform="translate(361, 0)"><use xlink:href="#MJX-16-TEX-N-2B"></use></g><g data-mml-node="mn" transform="translate(1139, 0)"><use xlink:href="#MJX-16-TEX-N-31"></use></g></g></g></g></g></svg>:</span> <input class="form-control survey-data form-control-sm ml-1" style="flex-basis: auto; width: auto;" name="AR1Quiz3" type="number"></label>
+                            <label class="d-flex flex-row"><span>Conditional variance of <?xml version="1.0" encoding="UTF-8" standalone="no" ?><svg xmlns="http://www.w3.org/2000/svg" width="32.232px" height="11.768px" viewBox="0 -442 1780.9 650" xmlns:xlink="http://www.w3.org/1999/xlink" style=""><defs><path id="MJX-17-TEX-I-78" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path><path id="MJX-17-TEX-I-74" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path><path id="MJX-17-TEX-N-2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path><path id="MJX-17-TEX-N-32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><use xlink:href="#MJX-17-TEX-I-78"></use></g><g data-mml-node="TeXAtom" transform="translate(572, -150) scale(0.707)"><g data-mml-node="mi"><use xlink:href="#MJX-17-TEX-I-74"></use></g><g data-mml-node="mo" transform="translate(361, 0)"><use xlink:href="#MJX-17-TEX-N-2B"></use></g><g data-mml-node="mn" transform="translate(1139, 0)"><use xlink:href="#MJX-17-TEX-N-32"></use></g></g></g></g></g></svg>:</span> <input name="AR1Quiz4" class="form-control survey-data form-control-sm ml-1" style="flex-basis: auto; width: auto;" type="number"></label> 
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <h2 class="mt-3">Do you have any experience investing in financial assets
+                        (e.g., stocks, bonds, mutual funds, pension funds, etc.)?</h2>
+                    <select class="form-control survey-data" name="investmentExperience">
+                        <option value="xxx">Please specify</option>
+                        <option value="extensive">I have extensive experience</option>
+                        <option value="some">I have some experience</option>
+                        <option value="limited">I have very limited experience</option>
+                        <option value="none">I have no experience at all</option>
+                    </select>
+                </li>
+
+                <li>
+                    <h2 class="mt-3">What is the median of the following numbers: 10, 30, 60, 70, 90, 150, 220, 760?
+                    </h2>
+                    <input type="number" class="form-control survey-data" name="medianChallenge"
+                        placeholder="Enter value">
+
+                <li>
+                    <h2 class="mt-3">A town has two hospitals. The larger hospital has on average 35 babies
+                        born every day. The smaller hospital has on average 10 babies born every day.
+                        We know that about 50 percent of babies are boys. For a period of 6 months,
+                        the hospitals recorded the number of days when more than 70 percent of the
+                        babies born are boys, and called them “baby boy days”. Which of the
+                        following do you think is most likely?</h2>
+                    <select class="survey-data form-control" name="hospitalChallenge">
+                        <option value="xxx">Please specify</option>
+                        <option value="larger">The larger hospital recorded more "baby boy days" than the smaller
+                            hospital
+                        </option>
+                        <option value="smaller">The smaller hospital recorded more "baby boy days" than the larger
+                            hospital
+                        </option>
+                        <option value="same">The two hospitals recorded the same number of "baby boy days"</option>
+                    </select>
+                </li>
+
+                <li>
+                    <h2 class="mt-3">A fair coin is tossed 6 times. What do you think about the
+                        likelihood of seeing Pattern A: H-T-H-T-T-H vs. Pattern B: H-H-H-T-T-T?</h2>
+                    <select class="survey-data form-control" name="coinTossChallenge">
+                        <option value="xxx">Please specify</option>
+                        <option value="a">Pattern A is more likely than Pattern B</option>
+                        <option value="b">Pattern B is more likely than Pattern A</option>
+                        <option value="same">They are equally likely</option>
+                        <option value="none">None of the above</option>
+                    </select>
+                </li>
+
+                <li>
+                    <h2 class="mt-3">When would you say is a good time to invest in stocks?</h2>
+                    <select class="survey-data form-control" name="investWhen">
+                        <option value="xxx">Please specify</option>
+                        <option value="goingUp">If the stock market has been going up in the past two years</option>
+                        <option value="goingDown">If the stock market has been going down in the past two years</option>
+                        <option value="noOpinion">I do not have an opinion</option>
+                    </select>
+                </li>
+
+            </ol>
+
+            <h3 class="mt-3">Feedback</h3>
+
+            <h2>The study is now completed. Do you have any comments and
+                suggestions for the survey? Did you find anything to be unclear
+                or confusing?</h2>
+            <textarea class="mb-4 survey-data optional form-control" name="feedback" cols="40" rows="5"></textarea>
+
+            <p>Click the button below to validate your experiment data.</p>
+            <input type="button" id="submit-button" class="btn-block btn-primary btn mb-2" value="Next">
+
+        </div>
+
+        <div class="page" id="final-page" style="display: none">
+            <div class="content-scroll">
+                <h3 class="mt-2">Almost done!</h3>
+
+                <p>The experiment is now completed. Thank you very much for your participation!</p>
+                <p class="insert-score-bonus" style="display: none;"><b>Your total score in the prediction section was
+                        <span class="insert-final-score"></span>. The corresponding bonus payment is $<span
+                            class="insert-final-bonus"></span>.</b></p>
+                <p class="insert-score-bonus-0" style="display: none;"><b>Your total score in the first prediction
+                        section was <span class="insert-final-score"></span>. The corresponding bonus payment is $<span
+                            class="insert-final-bonus"></span>.</b></p>
+                <p class="insert-score-bonus-1" style="display: none;"><b>Your total score in the second prediction
+                        section was <span class="insert-final-score"></span>. The corresponding bonus payment is $<span
+                            class="insert-final-bonus"></span>.</b></p>
+                <p class="insert-score-bonus-2" style="display: none;"><b>Your total score in the third prediction
+                        section was <span class="insert-final-score"></span>. The corresponding bonus payment is $<span
+                            class="insert-final-bonus"></span>.</b></p>
+                <p class="insert-score-bonus-3" style="display: none;"><b>Your total score in the fourth prediction
+                        section was <span class="insert-final-score"></span>. The corresponding bonus payment is $<span
+                            class="insert-final-bonus"></span>.</b></p>
+
+                <p>
+                    <b>
+                        Base payment: $<span class="insert-base-payment"></span><br>
+                        Bonus payment: $<span class="insert-total-bonus-payment"></span><br>
+                        <span class="material-bonus"></span>
+                    </b>
+                </p>
+
+                <style>
+                    .payment-info {
+                        display: none;
+                    }
+
+                    .condition-group-C .payment-info-gift-card {
+                        display: block;
+                    }
+
+                    .condition-group-C .payment-info-default {
+                        display: none;
+                    }
+                </style>
+
+                <p class="payment-info payment-info-gift-card">
+                    You will receive the payments in an Amazon e-gift card shortly by email. Payments may vary by +/- one cent due to rounding. To be eligible for payments and to receive the e-gift card, please enter your MIT email below:
+                    <input name="email" type="email" class="mt-3 form-control survey-data"  placeholder="Email" />
+                </p>
+                
+                <p class="payment-info-default">You will receive your payments within five days. Bonus payments may vary by +/- one
+                    cent due to rounding. Make sure to save this page for your records. If you have any
+                    questions, please feel free to contact us.</p>
+
+                <h3>More Information</h3>
+
+                <p>In case you are curious about the statistical questions at the end of the experiment, here
+                    are the answers. <b>Your answers to these questions do not affect your payments or the quality
+                        of your performance in this HIT.</b></p>
+
+                <h2>Q. What is the median of the following numbers: 10, 30, 60, 70, 90, 150, 220, 760?</h2>
+                <p>A: The median is (70 + 90) / 2 = 80.</p>
+
+                <h2>Q. A town has two hospitals. The larger hospital has on average 35 babies
+                    born every day. The smaller hospital has on average 10 babies born every day.
+                    We know that about 50 percent of babies are boys. For a period of 6 months,
+                    the hospitals recorded the number of days when more than 70 percent of the
+                    babies born are boys, and called them “baby boy days”. Which of the
+                    following do you think is most likely?</h2>
+                <p>A: The smaller hospital recorded more "baby boy days" than the larger hospital.</p>
+
+                <h2>Q. A fair coin is tossed 6 times. What do you think about the
+                    likelihood of seeing Pattern A: H-T-H-T-T-H vs. Pattern B: H-H-H-T-T-T?</h2>
+                <p>A: They are equally likely.</p>
+
+                <h3>To help us with our research, please do not discuss or share these questions
+                    on public forums. Thank you very much for your cooperation!</h3>
+            </div>
+            <input class="final-button btn-success btn btn-block mb-4 mt-2" type="button"
+                value="Submit HIT and Return to MTurk">
+
+        </div>
+    </div>
+</body>
+
+</html>

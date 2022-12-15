@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>HIT List</title>
+        <link rel="stylesheet" type="text/css" href="../../assets/style.css">
+        <script src="../../assets/js/jquery-3.1.1.min.js"></script>
+    </head>
+
+    <body>
+
+        <h1><a href="../">↩ Go back</a></h1>
+        <h2>List of HITs</h2>
+        <table id="hitlist">
+            <thead>
+                <tr>
+                    <td>ID</td>
+                    <td>Internal Name</td>
+                    <td>Launch Date</td>
+                    <td>Assignment Count</td>
+                    <td><a href="./conditions.html">Condition Codes</a></td>
+                    <td>Sandbox</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <script>
+            $(function () {
+                $.ajax({
+                    url: '../../hits',
+                    type: 'GET',
+                    success: function (data) {
+                        const hits = data;
+                        for (var i = 0; i < hits.length; ++i) {
+                            var row = $('<tr>').appendTo('#hitlist tbody');
+                            row.append($('<td>').append($('<a>').attr('href',
+                                'show-hit?hit=' + hits[i]._id).text(hits[i]._id)));
+                            row.append($('<td>').text(hits[i].internalName));
+                            row.append($('<td>').text(hits[i].creationTime));
+                            row.append($('<td>').text(hits[i].assignments));
+                            row.append($('<td>').text(hits[i].conditions.join(', ')));
+                            row.append($('<td>').text(hits[i].sandbox ? 'yes' : 'no'));
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        var body = $(document.body);
+                        body.append('<h2>Error</h2>');
+                        if (jqXHR.status === 502) {
+                            var messages = jqXHR.responseJSON.messages;
+                            var ul = $('<ul>').appendTo(body);
+                            for (var i = 0; i < messages.length; ++i) {
+                                ul.append($('<li>').text(messages[i]));
+                            }
+                        } else {
+                            var msg = textStatus;
+                            if (errorThrown) msg += ': ' + errorThrown;
+                            body.append($('<p>').text(msg));
+                        }
+                    }
+                });
+            });
+        </script>
+
+    </body>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Account Balance</title>
+        <link rel="stylesheet" type="text/css" href="../../assets/style.css">
+        <script src="../../assets/js/jquery-3.1.1.min.js"></script>
+    </head>
+
+    <body>
+
+        <h1><a href="../">↩ Go back</a></h1>
+        <h2>Account Balance</h2>
+        <p>Sandbox balance: <b><span id="sandbox-balance"></span></b></p>
+        <p>Live balance: <b><span id="live-balance"></span></b></p>
+
+        <script>
+            $(function () {
+                var check = function (sandbox) {
+                    $.ajax({
+                        url: '../../balance?sandbox=' + sandbox,
+                        type: 'GET',
+                        success: function (data) {
+                            var name = sandbox ? 'sandbox' : 'live';
+                            $('#' + name + '-balance').text(data.AvailableBalance);
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            var msg = 'Check command failed: ' + textStatus;
+                            if (errorThrown) msg += ': ' + errorThrown;
+                            var body = $(document.body);
+                            body.append('<h2>Error</h2>');
+                            body.append($('<p>').text(msg));
+                        }
+                    });
+                };
+                check(0);
+                check(1);
+            });
+        </script>
+
+    </body>
+
+</html>

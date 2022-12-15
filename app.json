@@ -1,0 +1,28 @@
+{
+  "name": "Forecast research interface",
+  "description": "",
+  "repository": "https://github.com/forecast-research/interface",
+  "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUDlC4qcXDpCVfe5oFuYxA_rmVQMjplWK6XE0DhFN94Ia1SWeEHcGn&usqp=CAE&s",
+  "keywords": [],
+  "addons": ["ormongo:2-wt"],
+  "env": {
+    "AWS_ACCESS_KEY_ID": {
+      "description": "Put your access key id for AWS mTurk here.",
+      "required": true
+    },
+    "AWS_ACCESS_KEY_SECRET": {
+      "description": "Put your secret key for AWS mTurk here.",
+      "required": true
+    },
+    "ADMIN_PASSWORD": {
+      "description": "Password for logging in to the admin panel.",
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "standard-1x"
+    }
+  }
+}

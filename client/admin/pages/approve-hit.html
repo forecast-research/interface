@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Approve HIT</title>
+        <link rel="stylesheet" type="text/css" href="../../assets/style.css">
+        <script src="../../assets/js/jquery-3.1.1.min.js"></script>
+    </head>
+
+    <body>
+
+        <h1><a href="../">↩ Go back</a></h1>
+        <h2>HIT Approval</h2>
+
+        <h2>Assignments</h2>
+
+        <table id="assignmentlist">
+            <thead>
+                <tr>
+                    <td>Assignment ID</td>
+                    <td>Worker ID</td>
+                    <td><a href="./conditions.html">Condition</a></td>
+                    <td>Score</td>
+                    <td>Base Payment</td>
+                    <td>Bonus Amount</td>
+                    <td>Time Spent</td>
+                    <td>Status</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <h2>Control</h2>
+
+        <p>Note: This button will automatically approve ALL assignments whose <b>Status</b>
+        above is "Submitted." It will also grant the <b>Bonus Amount</b> listed above to
+        each such assignment. It will <i>not</i> take any action on assignments whose <b>Status</b>
+        is anything other than "Submitted."
+        <b>Make sure you have sufficient funds in Amazon before clicking!</b>
+        All Turk actions are logged and can be downloaded from the web application console
+        (contact the developer).</p>
+
+        <p><b>Total amount that will be spent (EXCLUDING FEES):
+        <span style="color: red; font-size: 14pt">$<span id="total-amount"></span></span></p>
+
+        <input id="approve" type="button" value="Approve All Assignments &amp; Issue Bonuses">
+
+        <script>
+            var getQueryStringParam = function (name) {
+                var query = window.location.search.substring(1);
+                var vars = query.split('&');
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split('=', 2);
+                    if (decodeURIComponent(pair[0]) === name) {
+                        return decodeURIComponent(pair[1]);
+                    }
+                }
+                return null;
+            };
+            $(function () {
+                var hitId = getQueryStringParam('hit');
+                if (hitId == false) {
+                    window.alert('Query string parameter \'hit\' required');
+                    return;
+                }
+                $.ajax({
+                    url: '../../hits/' + hitId + '/approve/0',
+                    type: 'POST',
+                    success: function (assignments) {
+                        var total = 0;
+                        for (var i = 0; i < assignments.length; ++i) {
+                            var row = $('<tr>').appendTo('#assignmentlist tbody');
+                            row.append($('<td>').append($('<a>').attr('href',
+                                'show-assignment?hit=' + hitId + '&assignment=' +
+                                assignments[i]._id).text(assignments[i]._id)));
+                            row.append($('<td>').text(assignments[i].workerId));
+                            row.append($('<td>').text(assignments[i].condition));
+                            row.append($('<td>').text(assignments[i].score || 0));
+                            row.append($('<td>').text('$' + assignments[i].basePayment.toFixed(2)));
+                            row.append($('<td>').text('$' + assignments[i].bonusPayment.toFixed(2)));
+                            if (assignments[i].duration) {
+                                row.append($('<td>').text((assignments[i].duration / 60).toFixed(1) + ' minutes'));
+                            } else {
+                                row.append($('<td>').text('N/A'));
+                            }
+                            row.append($('<td>').text(assignments[i].status));
+                            if (assignments[i].status === 'Submitted') {
+                                total += assignments[i].basePayment;
+                                total += assignments[i].bonusPayment;
+                            }
+                        }
+                        $('#total-amount').text(total.toFixed(2));
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        var body = $(document.body);
+                        body.append('<h2>Error</h2>');
+                        if (jqXHR.status === 502) {
+                            var messages = jqXHR.responseJSON.messages;
+                            var ul = $('<ul>').appendTo(body);
+                            for (var i = 0; i < messages.length; ++i) {
+                                ul.append($('<li>').text(messages[i]));
+                            }
+                        } else {
+                            var msg = textStatus;
+                            if (errorThrown) msg += ': ' + errorThrown;
+                            body.append($('<p>').text(msg));
+                        }
+                    }
+                });
+                $('#approve').click(function () {
+                    $.ajax({
+                        url: '../../hits/' + hitId + '/approve/1',
+                        type: 'POST',
+                        success: function (assignments) {
+                            window.location = 'show-hit?hit=' + hitId;
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            var body = $(document.body);
+                            body.append('<h2>Error</h2>');
+                            if (jqXHR.status === 502) {
+                                var messages = jqXHR.responseJSON.messages;
+                                var ul = $('<ul>').appendTo(body);
+                                for (var i = 0; i < messages.length; ++i) {
+                                    ul.append($('<li>').text(messages[i]));
+                                }
+                            } else {
+                                var msg = textStatus;
+                                if (errorThrown) msg += ': ' + errorThrown;
+                                body.append($('<p>').text(msg));
+                            }
+                        },
+                    });
+                });
+            });
+        </script>
+
+    </body>
+
+</html>

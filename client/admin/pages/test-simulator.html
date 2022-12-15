@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Experiment on Statistical Expectations</title>
+        <link rel="stylesheet" type="text/css" href="../../assets/experiment.css">
+        <script src="../../assets/js/jquery-3.1.1.min.js"></script>
+        <style type="text/css">
+            body { padding-left: 10px; padding-right: 10px; }
+            input { margin: 1px; margin-left: 5px; }
+            input[type='checkbox'] { vertical-align: middle; }
+            select { margin: 2px; }
+        </style>
+    </head>
+
+    <body>
+
+        <h1>Simulated Experiment App Launcher</h1>
+
+        <fieldset>
+            <legend>Statistical Model Parameters</legend>
+            Inertia (&rho;): <input type="number" id="rho" name="rho" value="0.5" placeholder="Rho value"><br>
+            Constant (&mu;): <input type="number" id="mu" name="mu" value="0" placeholder="Mu value"><br>
+            Standard deviation (&sigma;): <input type="number" id="sigma" name="sigma" value="20" placeholder="Sigma value"><br>
+            RNG seed (blank for random): <input type="text" id="seed" name="seed"><br>
+        </fieldset>
+
+        <br>
+
+        <fieldset>
+            <legend>Instructions and Payment</legend>
+            Base payment ($): <input type="number" id="basePayment" name="basePayment" value="1.80" placeholder="Base payment"><br>
+            Bonus divisor (points/$): <input type="number" id="bonusDivisor" value="600" placeholder="Bonus divisor"><br>
+            Context description (inserted into instructions):
+            <input type="text" id="context" name="context" value="quarterly US real GDP growth">
+        </fieldset>
+
+        <br>
+
+        <fieldset>
+            <legend>User Interface Settings</legend>
+            Entry mode: <select name="entryMode" id="entryMode"><option value="graphical">Graphical</option><option value="numeric">Numeric</option></select><br>
+            Training rounds: <input type="number" id="trainingRounds" name="trainingRounds" value="0" placeholder="Training rounds"><br>
+            Testing rounds: <input type="number" id="testingRounds" name="testingRounds" value="40" placeholder="Testing rounds"><br>
+            Forecast mode:
+            <select id="forecastMode" value="forecastMode">
+                <option value="1+2">F1 + F2</option>
+                <option value="1">F1 only</option>
+                <option value="2">F2 only</option>
+                <option value="1+5">F1 + F5</option>
+            </select><br>
+            Show gray dots: <input type="checkbox" id="showGrayDots" name="showGrayDots" value="1" checked><br>
+            Skip intro: <input type="checkbox" id="skipIntro" name="skipIntro" value="1"><br>
+        </fieldset>
+
+        <br>
+        <input id="launch" type="button" value="Launch!">
+        <br><br>
+
+        <iframe id="frame" height="400" style="border: 1px solid black; width: 90%"></iframe>
+
+        <script>
+            $(function () {
+                $('#launch').click(function () {
+                    console.log($('#rho').val())
+                    $('#frame')[0].src = '../experiment.html?offline=1' +
+                        '&rho=' + $('#rho').val() +
+                        '&mu=' + $('#mu').val() +
+                        '&sigma=' + $('#sigma').val() +
+                        '&seed=' + $('#seed').val().trim() +
+                        '&entryMode=' + $('#entryMode').val() +
+                        '&basePayment=' + $('#basePayment').val() +
+                        '&bonusDivisor=' + $('#bonusDivisor').val() +
+                        '&trainingRounds=' + $('#trainingRounds').val() +
+                        '&testingRounds=' + $('#testingRounds').val() +
+                        '&showGrayDots=' + ($('#showGrayDots')[0].checked ? '1' : '0') +
+                        '&skipIntro=' + ($('#skipIntro')[0].checked ? '1' : '0') +
+                        '&forecastMode=' + $('#forecastMode').val() +
+                        '&context=' + encodeURIComponent($('#context').val());
+                });
+            });
+        </script>
+
+    </body>
+</html>
