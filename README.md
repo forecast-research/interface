@@ -1,3 +1,13 @@
+This repository contains the code for the experiments described in [Afrouzi, Kwon, Landier, Ma and Thesmar (2022)](https://afrouzi.com/aklmt_overreaction.pdf).
+
+## Preview
+You can preview the experiments by accessing the link below. This will allow you to view demonstrations of all the treatments.
+
+Please note that this is just for previewing purposes and is not an actual experiment. Your responses will not be saved, and while you may see scores and bonuses that a participant with your responses would have received, you are not participating in any experiments and will not receive any payments.  
+
+Please also note that the dimensions of the preview window may differ from what actual participants saw. To replicate the dimensions exactly, please use the "Deployment" procedure below and launch the experiments on Amazon MTurk Sandbox. However, please note that deploying it to Amazon MTurk platform might require IRB approval from your institution and we are not responsible for any such requirements on your end.
+
+Link to demonstrations: [https://uchicago-mturk-v2.herokuapp.com/](https://uchicago-mturk-v2.herokuapp.com/)
 
 ## Deployment
 
@@ -30,8 +40,6 @@ We now have our user + database and need to restart the app.
 2. Press "more" followed by "Restart all dynos".
 
 After a few minutes the app should be up and running at appName.herokuapp.com/admin.
-
-Good luck!
 
 ## Deleting the app from Heroku
 
