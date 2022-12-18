@@ -11,7 +11,15 @@ Link to demonstrations: [https://uchicago-mturk-v2.herokuapp.com/](https://uchic
 
 ## Deployment
 
-Follow these steps to deploy the interface to Heroku
+To launch the interface, you will need to set up the following accounts:
+
+1. A Heroku account (which may require a paid subscription).
+
+2. An Amazon AWS account that is linked to your Amazon mTurk account. To do this, proceed according to the steps in the following guide: [https://docs.aws.amazon.com/AWSMechTurk/latest/AWSMechanicalTurkGettingStartedGuide/SetUp.html](https://docs.aws.amazon.com/AWSMechTurk/latest/AWSMechanicalTurkGettingStartedGuide/SetUp.html). 
+
+Make sure to select AmazonMechanicalTurkFullAccess in step 4, and to link your AWS account to both the mTurk requester and mTurk requester sandbox accounts as described in the guide.
+
+Once these accounts are setup, follow these next steps to deploy the interface to Heroku:
 
 1. Press the button below to begin. If you don't have a Heroku account you will be able to create one first.
 
@@ -21,7 +29,7 @@ Follow these steps to deploy the interface to Heroku
 
 3. Enter your mTurk credentials (Id + secret). Save this for later.
 
-4. Choose an admin password for the interface.
+4. Choose an admin password for the interface. Note that the default username is 'admin'.
 
 5. Press "Deploy app".
 
