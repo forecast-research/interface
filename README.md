@@ -7,7 +7,7 @@ Please note that this is just for previewing purposes and is not an actual exper
 
 Please also note that the dimensions of the preview window may differ from what actual participants saw. To replicate the dimensions exactly, please use the "Deployment" procedure below and launch the experiments on Amazon MTurk Sandbox. However, please note that deploying it to Amazon MTurk platform might require IRB approval from your institution and we are not responsible for any such requirements on your end.
 
-Link to demonstrations: [https://uchicago-mturk-v2.herokuapp.com/](https://uchicago-mturk-v2.herokuapp.com/)
+Link to demonstrations: [https://forecast-research.herokuapp.com/](https://forecast-research.herokuapp.com/)
 
 ## Deployment
 
