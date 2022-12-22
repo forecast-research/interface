@@ -5,7 +5,7 @@ You can preview the experiments by accessing the link below. This will allow you
 
 Please note that this is just for previewing purposes and is not an actual experiment. Your responses will not be saved, and while you may see scores and bonuses that a participant with your responses would have received, you are not participating in any experiments and will not receive any payments.  
 
-Please also note that the dimensions of the preview window may differ from what actual participants saw. To replicate the dimensions exactly, please use the "Deployment" procedure below and launch the experiments on Amazon MTurk Sandbox. However, please note that deploying it to Amazon MTurk platform might require IRB approval from your institution and we are not responsible for any such requirements on your end.
+Please also note that the dimensions of the preview window may differ from what actual participants saw. To replicate the dimensions exactly, please use the "Deployment" procedure below and launch the experiments on Amazon MTurk Sandbox. However, please note that conducting experiments on MTurk to collect data might require IRB approval from your institution and we are not responsible for any such requirements on your end.
 
 Link to demonstrations: [https://forecast-research.herokuapp.com/](https://forecast-research.herokuapp.com/)
 
